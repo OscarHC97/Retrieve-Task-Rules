@@ -1,7 +1,8 @@
 import random
+import csv
 
 class Proceso10:
-		
+
 	def Entrada(self, regla_audio_movimiento, numero_ensayo):
 
 		self.regla_usada = regla_audio_movimiento[0]
@@ -34,11 +35,45 @@ class Proceso10:
 
 		movimiento_correcto = (regla_del_ensayo>>(4-self.audio_escuchado))%2
 		movimiento_correcto_pasado = (regla_del_ensayo_pasado>>(4-self.audio_escuchado))%2
+
+		#Se abre el archivo csv para escribir la nueva línea
+		with open('architectureResults.csv', mode='a', newline='') as csv_file:
+			fieldnames = ['Reaction_Time', 'Status', 'Picked_Side', 'Error', 'Perseveration_Error', 'Trial_was_not_Perseveration']
+			writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+			#writer.writeheader()
+
+			#Si el movimiento hecho y el correcto son iguales, no hubo error
+			if (self.movimiento_hecho == movimiento_correcto):
+				writer.writerow({'Reaction_Time':0,
+								 'Status':1,
+								 'Picked_Side':self.movimiento_hecho,
+								 'Error':0,
+								 'Perseveration_Error':0,
+								 'Trial_was_not_Perseveration':1
+								 })
+			#Si el movimiento hecho no es correcto, se verifica si lo fue con la regla anterior
+			elif(self.movimiento_hecho == movimiento_correcto_pasado):
+				writer.writerow({'Reaction_Time': 0,
+								 'Status': 2,
+								 'Picked_Side': self.movimiento_hecho,
+								 'Error': 1,
+								 'Perseveration_Error': 1,
+								 'Trial_was_not_Perseveration': 1
+								 })
+			#Si ninguna condición se cumple, entonces tenemos error sin perseveración
+			else:
+				writer.writerow({'Reaction_Time':0,
+								 'Status':2,
+								 'Picked_Side':self.movimiento_hecho,
+								 'Error':1,
+								 'Perseveration_Error':0,
+								 'Trial_was_not_Perseveration':1
+								 })
+
+
 		self.recompensa = 0
 		if(movimiento_correcto == self.movimiento_hecho):
 			self.recompensa = 1
 		
 	def Salida(self):
 		return ([self.regla_usada, self.recompensa])
-
-
