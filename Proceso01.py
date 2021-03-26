@@ -20,3 +20,16 @@ class Proceso01:
 
 	def Salida(self):
 		return(self.regla)
+
+	def Similar(self,a,b,c):
+		aux = []
+		a1 = (a*(-1))+1
+		b1 = (b/2.0)+0.5
+		b1 = b1*(-1)+1
+
+		cont = round(a1*2+b1)
+		for i in range(16):
+			if((i>>cont)%2==c):
+				aux.append(i)
+
+		return aux
